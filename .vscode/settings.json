@@ -1,0 +1,7 @@
+{
+    "oklchPreview.additionalFilePatterns": [
+        "**/*.css",
+        "**/*.vue",
+        "*.vue"
+    ]
+}
