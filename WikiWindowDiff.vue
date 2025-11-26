@@ -18,7 +18,7 @@ const emit = defineEmits<{
 }>();
 </script>
 <template>
-    <wiki-window :title="title" @minimize="emit('close')" @close="emit('minimize')">
+    <wiki-window :title="title" @minimize="emit('minimize')" @close="emit('close')">
         <table class="diff diff-contentalign-left diff-editfont-monospace">
             <colgroup><col class="diff-marker">
 				<col class="diff-content">

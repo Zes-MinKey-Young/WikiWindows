@@ -109,15 +109,16 @@ function resolveLink(href: string) {
         title = decodeURIComponent(path.substring(articlePathWithout$1.length));
     } else if (path.startsWith(indexPHP)) {
         title = decodeURIComponent(url.searchParams.get("title") ?? "");
+    }
+    
         // curid oldid特判
-        const sp = url.searchParams;
-        if (sp.get("curid")) {
-            addWindow(new WikiWindowDiffData(sp.get('diff'), sp.get("oldid")));
-            return;
-        }
-        if (title.length === 0) {
-            return false;
-        }
+    const sp = url.searchParams;
+    if (sp.get("curid")) {
+        addWindow(new WikiWindowDiffData(sp.get('diff'), sp.get("oldid")));
+        return;
+    }
+    if (title.length === 0) {
+        return false;
     }
     const titleObj = new mw.Title(title);
     if (titleObj.getNamespaceId() === -1) { // Special
@@ -174,7 +175,10 @@ const shownContainer: Ref<HTMLDivElement | null> = ref(null);
 const allWindows = shallowReactive<WikiWindowData<any>[]>([]);
 const activeWindows = [];
 const metaWindow = ref<WikiWindowMetaData | null>(null);
-
+window.windows = {
+    allWindows,
+    activeWindows
+}
 
 const host = mw.config.get("wgServer"); // https://xx.miraheze.org/ ,etc
 const indexPHP = mw.config.get("wgScript"); // /w/index.php

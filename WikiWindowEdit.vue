@@ -47,7 +47,7 @@ function edit() {
     <wiki-window :title @close="$emit('close')" @minimize="$emit('minimize')">
         <div class="window-content">
             <CdxTextArea style="flex: 1;" label="Text"
-                :placeholder="pageMissing ? `Creating ${pageTitle}` : `Editing ${pageTitle}`" v-model="text" />
+                :placeholder="pageMissing ? `Creating ${pageTitle.value}` : `Editing ${pageTitle.value}`" v-model="text" />
             <div class="summary">
                 <span>Summary:</span>
                 <cdx-text-input v-model="summary"></cdx-text-input>
