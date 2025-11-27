@@ -68,14 +68,16 @@ div.summary {
     flex-direction: row;
     gap: 8px;
     align-items: center;
+    width: 100%;
 }
 
-.cdx-text-area ::v-deep textarea {
+.cdx-text-area :v-deep(textarea) {
     height: 100%;
 }
 .window-content {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
 }
 </style>

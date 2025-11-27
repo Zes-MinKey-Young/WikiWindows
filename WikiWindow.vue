@@ -30,6 +30,7 @@ defineEmits<{
         left: 10vw;
         top: 8vh;
         display: grid;
+        grid-template-columns: 100%;
         grid-template-rows: max-content 1fr;
         position: fixed;
         background-color: var(--ww-color-background);
@@ -48,6 +49,7 @@ defineEmits<{
     .wikiwindow-title {
         font-size: 1.5rem;
         margin: auto;
+        word-break: break-all;
     }
     .wikiwindow-close {
         cursor: pointer;

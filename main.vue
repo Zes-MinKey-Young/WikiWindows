@@ -420,7 +420,7 @@ class WikiWindowDiffData extends WikiWindowData<typeof WikiWindowDiff> {
         }
         const diffTable = ref("");
         this.props.diffTable = diffTable;
-        this.props.oldTitle = ref(this.props.title);
+        this.props.oldTitle = ref("");
         this.props.parsedHTML = ref("");
         api.get(params).done((result: CompareResult) => {
             diffTable.value = result.compare.body;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, effect, computed, watch } from 'vue'
+import { ref, effect, computed, watch, getCurrentInstance } from 'vue'
 
 import WikiWindow from './WikiWindow.vue';
 import type { MenuItemData } from "@wikimedia/codex"
@@ -28,10 +28,12 @@ enum Action {
     History = 2
 }
 
+const _ = getCurrentInstance().appContext.config.globalProperties.$i18n;
+
 const menuItems: MenuItemData[] = [
-    { value: "Edit" },
-    { value: "View" },
-    { value: "History" }
+    { value: "Edit", label: _('ww:meta.actions.edit').text() },
+    { value: "View", label: _('ww:meta.actions.view').text() },
+    { value: "History", label: _('ww:meta.actions.history').text() }
 ]
 
 const menuItem = ref('Edit');
@@ -53,11 +55,11 @@ const realTitle = ref<string>("");
 
 </script>
 <template>
-    <wiki-window title="Meta Window" @close="$emit('close')" @minimize="$emit('minimize')">
+    <wiki-window :title="$i18n('ww:meta.title').text()" @close="$emit('close')" @minimize="$emit('minimize')">
     <div class="ww-wrapper">
-        <cdx-text-input label="Title" placeholder="Title" v-model:model-value="realTitle"></cdx-text-input>
+        <cdx-text-input label="Title" :placeholder="$i18n('ww:meta.placeholder-title').text()" v-model:model-value="realTitle"></cdx-text-input>
         <cdx-select :menu-items="menuItems" v-model:selected="menuItem"></cdx-select>
-        <cdx-button weight="primary" @click="go">Go!</cdx-button>
+        <cdx-button weight="primary" @click="go">{{ $i18n("ww:meta.go") }}</cdx-button>
     </div>
     </wiki-window>
 </template>
