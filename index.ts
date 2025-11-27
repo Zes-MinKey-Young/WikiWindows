@@ -1,6 +1,6 @@
 // import {createApp} from "vue";
 import Test from "./main.vue";
-import "i18n";
+import "./i18n";
 
 
 const app = Vue.createMwApp(Test);
