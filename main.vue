@@ -45,6 +45,7 @@ $(document).on("click", "a[href]", (jqe) => {
             // jQuery's currentTarget is a[href]
             // but the DOM Event's is the document
             resolveLink(href);
+            state.value = WWState.initial;
             console.log("resolved")
             jqe.originalEvent.preventDefault();
             break;
@@ -173,8 +174,10 @@ function nextState() {
 
 const shownContainer: Ref<HTMLDivElement | null> = ref(null);
 const allWindows = shallowReactive<WikiWindowData<any>[]>([]);
-const activeWindows = [];
+const activeWindows: WikiWindowData<any>[] = [];
 const metaWindow = ref<WikiWindowMetaData | null>(null);
+
+// @ts-expect-error 调试用
 window.windows = {
     allWindows,
     activeWindows
@@ -206,8 +209,9 @@ function addWindow(win: WikiWindowData<any>) {
 }
 
 function reorderWindows() {
+    console.log("reorderWindows");
     activeWindows.forEach(win => {
-        win.ord = activeWindows.indexOf(win);
+        win.ord.value = activeWindows.indexOf(win);
     })
 }
 
@@ -280,6 +284,10 @@ class WikiWindowData<I extends abstract new (...args: any) => any> {
         this.props.onMinimize = WikiWindowData.onMinimize.bind(null, this);
         // @ts-expect-error
         this.props.onClose = WikiWindowData.onClose.bind(null, this);
+        // @ts-expect-error
+        this.props.onRaise = () => {
+            pushWindowToTop(this);
+        }
     }
     static getWindowFromTitleAndAction(title: string, action: Action) {
         switch (action) {
@@ -293,7 +301,7 @@ class WikiWindowData<I extends abstract new (...args: any) => any> {
                 return null;
         }
     }
-    ord: number;
+    ord: Ref<number> = ref(0);
 }
 
 class WikiWindowViewData extends WikiWindowData<typeof WikiWindowView> {
@@ -450,7 +458,7 @@ class WikiWindowDiffData extends WikiWindowData<typeof WikiWindowDiff> {
     <div class="wikiwindows-shown" ref="shownContainer">
             <template v-for="(win, index) in allWindows">
                 <keep-alive>
-                    <component :is="win.component" v-bind="win.props" v-show="win.active.value" :class="`wikiwindow-${activeWindows.length - win.ord}`"></component>
+                    <component :is="win.component" v-bind="win.props" v-show="win.active.value" :class="`wikiwindow-${activeWindows.length - win.ord.value}`"></component>
                 </keep-alive>
             </template>
     </div>
@@ -528,11 +536,15 @@ body {
 
 
 .wikiwindows-tabs {
+    writing-mode: vertical-rl;
     display: flex;
-    flex-direction: column;
+    flex-direction: row; // 受writing-mode影响
     position: fixed;
     right: 0;
     top: 50vh;
+    height: 35vh;
+    flex-wrap: wrap;
+
     
     &> div {
         background-color: var(--ww-color-background);
@@ -540,7 +552,7 @@ body {
         border: 1px solid var(--ww-color-state-initial);
         border-radius: 0.3em;
         padding: 0.3em;
-        writing-mode: vertical-rl;
+        height: fit-content
     }
 }
 

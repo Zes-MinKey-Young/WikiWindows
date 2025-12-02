@@ -7,6 +7,7 @@ import { CdxSelect, CdxTextInput, CdxButton } from '@wikimedia/codex'
 
 // 不得不用这个，我不知道为什么外面props变化检测不到
 import { listen } from "./events";
+import type { BasicEmits } from './basicEvents';
 
 listen('metaInput', (data) => {
     console.log(data);
@@ -18,9 +19,7 @@ const emit = defineEmits<{
         action: Action;
         title: string;
     }];
-    close: [];
-    minimize: [];
-}>();
+} & BasicEmits>();
 
 enum Action {
     Edit = 0,
@@ -55,7 +54,7 @@ const realTitle = ref<string>("");
 
 </script>
 <template>
-    <wiki-window :title="$i18n('ww:meta.title').text()" @close="$emit('close')" @minimize="$emit('minimize')">
+    <wiki-window :title="$i18n('ww:meta.title').text()" @close="$emit('close')" @minimize="$emit('minimize')" @raise="$emit('raise')">
     <div class="ww-wrapper">
         <cdx-text-input label="Title" :placeholder="$i18n('ww:meta.placeholder-title').text()" v-model:model-value="realTitle"></cdx-text-input>
         <cdx-select :menu-items="menuItems" v-model:selected="menuItem"></cdx-select>

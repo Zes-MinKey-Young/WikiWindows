@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { BasicEmits } from "./basicEvents";
 import WikiWindow from "./WikiWindow.vue";
 import { onMounted, ref } from "vue";
 
@@ -11,10 +12,8 @@ defineExpose({
 })
 
 const emit = defineEmits<{
-    close: [];
-    minimize: [];
     ready: [];
-}>();
+} & BasicEmits>();
 function ready(doc: Document, readyHandler) {
     if (doc.readyState === 'complete') {
         readyHandler()
@@ -37,7 +36,7 @@ function onIframeLoad() {
 </script>
 
 <template>
-    <wiki-window title="Test" @close="$emit('close')"  @minimize="$emit('minimize')">
+    <wiki-window title="Test" @close="$emit('close')"  @minimize="$emit('minimize')" @raise="$emit('raise')">
         <iframe ref="iframeElement" :src="url.href" frameborder="0" @load="onIframeLoad"></iframe>
     </wiki-window>
 </template>

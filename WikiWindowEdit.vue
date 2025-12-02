@@ -4,6 +4,7 @@ import { CdxTextArea, CdxButton, CdxCheckbox, CdxTextInput } from '@wikimedia/co
 import type * as mwApi from "types-mediawiki-api"
 import { ref } from 'vue';
 import type { Ref } from 'vue';
+import type { BasicEmits } from './basicEvents';
 
 const props = defineProps<{
     title: string;
@@ -11,10 +12,7 @@ const props = defineProps<{
     pageContent: Ref<string>;
     pageMissing: Ref<boolean>;
 }>();
-const emit = defineEmits<{
-    close: [];
-    minimize: [];
-}>();
+const emit = defineEmits<BasicEmits>();
 
 
 const minorDefault = mw.user.options.get("minordefault") == "1";
@@ -44,7 +42,7 @@ function edit() {
 </script>
 
 <template>
-    <wiki-window :title @close="$emit('close')" @minimize="$emit('minimize')">
+    <wiki-window :title @close="$emit('close')" @minimize="$emit('minimize')" @raise="$emit('raise')">
         <div class="window-content">
             <CdxTextArea style="flex: 1;" label="Text"
                 :placeholder="pageMissing ? `Creating ${pageTitle.value}` : `Editing ${pageTitle.value}`" v-model="text" />

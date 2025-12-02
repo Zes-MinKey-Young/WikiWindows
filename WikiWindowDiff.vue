@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Ref } from 'vue';
 import WikiWindow from './WikiWindow.vue';
+import type { BasicEmits } from './basicEvents';
 
 
 const props = defineProps<{
@@ -12,13 +13,10 @@ const props = defineProps<{
 
 console.log(props.diffTable);
 
-const emit = defineEmits<{
-    close: [];
-    minimize: [];
-}>();
+const emit = defineEmits<BasicEmits>();
 </script>
 <template>
-    <wiki-window :title="title" @minimize="emit('minimize')" @close="emit('close')">
+    <wiki-window :title="title" @minimize="$emit('minimize')" @close="emit('close')" @raise="$emit('raise')">
         <div class="diff-container">
             <div class="table-wrapper">
                 <table class="diff diff-contentalign-left diff-editfont-monospace">

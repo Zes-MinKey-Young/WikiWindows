@@ -1,19 +1,18 @@
 <script lang="ts" setup>
+import type { BasicEmits } from './basicEvents';
+
 defineProps<{
     title: string;
 }>();
 
-defineEmits<{
-    minimize: [];
-    close: [];
-}>();
+defineEmits<BasicEmits>();
 
 </script>
 
 <template>
     <div class="wikiwindow">
         <div class="wikiwindow-topbar">
-            <div class="wikiwindow-title">{{ title }}</div>
+            <div class="wikiwindow-title" @click="$emit('raise')">{{ title }}</div>
             <div class="wikiwindow-minimize" @click="$emit('minimize')">-</div>
             <div class="wikiwindow-close"  @click="$emit('close')">X</div>
         </div>
