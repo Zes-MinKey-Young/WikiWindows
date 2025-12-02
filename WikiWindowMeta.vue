@@ -59,6 +59,9 @@ const realTitle = ref<string>("");
         <cdx-text-input label="Title" :placeholder="$i18n('ww:meta.placeholder-title').text()" v-model:model-value="realTitle"></cdx-text-input>
         <cdx-select :menu-items="menuItems" v-model:selected="menuItem"></cdx-select>
         <cdx-button weight="primary" @click="go">{{ $i18n("ww:meta.go") }}</cdx-button>
+        <div>
+            Wikiwindows v0.3.0<br>GPLv3 Licensed
+        </div>
     </div>
     </wiki-window>
 </template>
