@@ -69,7 +69,7 @@ div.summary {
     width: 100%;
 }
 
-.cdx-text-area :v-deep(textarea) {
+.cdx-text-area :deep(textarea) {
     height: 100%;
 }
 .window-content {
