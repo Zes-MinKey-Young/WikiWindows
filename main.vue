@@ -17,13 +17,14 @@ import type { ExtractPublicPropTypes } from "vue";
 import { Action } from "./actions";
 import { emit } from "./events";
 import WikiWindow from "./WikiWindow.vue";
+import { toUnifiedSpecialPageName } from "./specialPageAlias";
 
 
 type IWikiWindowMeta = InstanceType<typeof WikiWindowMeta>;
 type IWikiWindowView = InstanceType<typeof WikiWindowView>;
 type IWikiWindow = IWikiWindowMeta | IWikiWindowView;
 
-
+const triggerWhenSelected = ref<keyof typeof Action>("View");
 
 
 enum WWState {
@@ -125,16 +126,16 @@ function resolveLink(href: string) {
     if (titleObj.getNamespaceId() === -1) { // Special
         resolveSpecialPage(titleObj, url);
     } else {
-        const actionParam = url.searchParams.get("action");
+        if (url.searchParams.get("diff")) {
+            addWindow(new WikiWindowDiffData(
+                url.searchParams.get('diff'),
+                url.searchParams.get('oldid')
+            ));
+        }
+        const actionParam = url.searchParams.get("action") || triggerWhenSelected.value.toLowerCase();
         switch (actionParam) {
             case "edit":
                 addWindow(new WikiWindowEditData(title));
-                break;
-            case "diff":
-                addWindow(new WikiWindowDiffData(
-                    url.searchParams.get('to'),
-                    url.searchParams.get('from')
-                ));
                 break;
             case "history":
                 resolveLink(url.href);
@@ -153,8 +154,8 @@ const specialPageMap = {
     ...(window.wwSpecialPages ?? {})
 }
 
-function resolveSpecialPage(titleObj: mw.Title, url: URL) {
-    const type = specialPageMap[titleObj.getMainText().split("/")[0]];
+async function resolveSpecialPage(titleObj: mw.Title, url: URL) {
+    const type = specialPageMap[await toUnifiedSpecialPageName(titleObj.getMainText().split("/")[0])];
     switch (type) {
         case "edit":
             resolveTitleAction(titleObj.getMainText().substring(5), Action.Edit);
@@ -331,6 +332,9 @@ class WikiWindowMetaData extends WikiWindowData<typeof WikiWindowMeta> {
         }
         this.props.onGo = ({action, title}) => {
             resolveTitleAction(title, action);
+        }
+        this.props["onUpdate:triggerWhenSelected"] = (action) => {
+            triggerWhenSelected.value = action as keyof typeof Action;
         }
     }
     update(title: string) {

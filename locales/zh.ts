@@ -9,6 +9,7 @@ export default {
             "edit": "编辑",
             "history": "历史"
         },
-        "go": "出发！"
+        "go": "出发！",
+        "normal-action": "当处在第二状态时点击链接触发："
     }
 }

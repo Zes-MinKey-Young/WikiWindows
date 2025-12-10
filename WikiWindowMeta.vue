@@ -19,6 +19,7 @@ const emit = defineEmits<{
         action: Action;
         title: string;
     }];
+    "update:triggerWhenSelected": [string]
 } & BasicEmits>();
 
 enum Action {
@@ -36,6 +37,7 @@ const menuItems: MenuItemData[] = [
 ]
 
 const menuItem = ref('Edit');
+const triggerWhenSelected = ref('View');
 
 function go() {
     console.log(menuItem.value)
@@ -60,7 +62,18 @@ const realTitle = ref<string>("");
         <cdx-select :menu-items="menuItems" v-model:selected="menuItem"></cdx-select>
         <cdx-button weight="primary" @click="go">{{ $i18n("ww:meta.go") }}</cdx-button>
         <div>
-            Wikiwindows v0.3.0<br>GPLv3 Licensed
+            {{ $i18n("ww:meta.normal-action") }}
+            <cdx-select :menu-items="menuItems" v-model:selected="triggerWhenSelected" @update:selected="$emit('update:triggerWhenSelected', triggerWhenSelected)"></cdx-select>
+        </div>
+        <div class="ww-version">
+            Wikiwindows v0.3.1<br>GPLv3 Licensed
+            <h1>0.3.1</h1>
+            <ul>
+                <li>修复了编辑窗口的文本框大小异常。</li>
+                <li>元窗口新增了“正常操作”选项，用于设置当用户在页面中选择了链接时，WikiWindows应该执行的操作。</li>
+                <li>Fixed the textarea size in the edit window.</li>
+                <li>Added a "Normal Action" option to the meta window, which allows the user to specify what action to take when a link is selected in a page.</li>
+            </ul>
         </div>
     </div>
     </wiki-window>
@@ -72,5 +85,10 @@ const realTitle = ref<string>("");
     flex-direction: column;
     gap: 1rem;
     padding: 0.2em;
+}
+
+.ww-version {
+    padding: 1em 2em;
+    overflow-y: auto;
 }
 </style>

@@ -8,7 +8,8 @@ export default {
             "edit": "Edit",
             "history": "History"
         },
-        "go": "Go!"
+        "go": "Go!",
+        "normal-action": "When in the second state, click the link to trigger:"
     },
     'view': "View $1",
 } satisfies typeof import('./zh.ts').default

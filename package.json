@@ -21,6 +21,7 @@
   },
   "scripts": {
     "b": "vite build --mode production",
-    "d": "vite build --watch --mode development"
+    "d": "vite build --watch --mode development",
+    "lmw": "bun scripts/server.js"
   }
 }
