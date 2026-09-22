@@ -2,7 +2,7 @@
 import WikiWindow from './WikiWindow.vue';
 import { CdxTextArea, CdxButton, CdxCheckbox, CdxTextInput } from '@wikimedia/codex';
 import type * as mwApi from "types-mediawiki-api"
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { BasicEmits } from './basicEvents';
 
@@ -11,6 +11,8 @@ const props = defineProps<{
     pageTitle: Ref<string>;
     pageContent: Ref<string>;
     pageMissing: Ref<boolean>;
+    ready: Ref<boolean>;
+    hookCode: Ref<string>;
 }>();
 const emit = defineEmits<BasicEmits>();
 
@@ -21,7 +23,7 @@ const watchDefault = mw.user.options.get("watchdefault") == 1;
 const text = ref(props.pageContent);
 const summary = ref('Edit via WikiWindows');
 const minor = ref(minorDefault);
-const watch = ref(watchDefault);
+const watches = ref(watchDefault);
 function edit() {
     new mw.Api()
         .postWithEditToken({
@@ -30,13 +32,24 @@ function edit() {
             text: text.value,
             summary: summary.value,
             minor: minor.value,
-            watch: watch.value
+            watch: watches.value
         }).then((data) => {
             console.log(data);
             emit('close');
         }, (error) => {
             mw.notify(error, { type: 'error' });
         });
+}
+
+watch(props.ready, (v) => {
+    if (v === false) { return; }
+    const fn = new Function("text", "summary", props.hookCode.value);
+    fn(text, summary);
+});
+
+if (props.ready) {
+    const fn = new Function("text", "summary", props.hookCode.value);
+    fn(text, summary);
 }
 
 </script>
@@ -53,7 +66,7 @@ function edit() {
             </div>
             <div>
                 <cdx-checkbox v-model:model-value="minor" :inline="true">Minor</cdx-checkbox>
-                <cdx-checkbox v-model:model-value="watch" :inline="true">Watch</cdx-checkbox>
+                <cdx-checkbox v-model:model-value="watches" :inline="true">Watch</cdx-checkbox>
             </div>
             <cdx-button weight="primary" action="progressive" @click="edit">Save</cdx-button>
         </div>

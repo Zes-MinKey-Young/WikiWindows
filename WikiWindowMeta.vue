@@ -3,7 +3,7 @@ import { ref, effect, computed, watch, getCurrentInstance } from 'vue'
 
 import WikiWindow from './WikiWindow.vue';
 import type { MenuItemData } from "@wikimedia/codex"
-import { CdxSelect, CdxTextInput, CdxButton } from '@wikimedia/codex'
+import { CdxSelect, CdxTextInput, CdxButton, CdxTextArea } from '@wikimedia/codex'
 
 // 不得不用这个，我不知道为什么外面props变化检测不到
 import { listen } from "./events";
@@ -20,6 +20,7 @@ const emit = defineEmits<{
         title: string;
     }];
     "update:triggerWhenSelected": [string]
+    "update:hookCode": [string]
 } & BasicEmits>();
 
 enum Action {
@@ -38,6 +39,9 @@ const menuItems: MenuItemData[] = [
 
 const menuItem = ref('Edit');
 const triggerWhenSelected = ref('View');
+const hookCode = ref(localStorage.getItem("ww:hookCode") || '');
+
+watch(hookCode, (s) => emit("update:hookCode", s));
 
 function go() {
     console.log(menuItem.value)
@@ -45,6 +49,10 @@ function go() {
         action: Action[menuItem.value],
         title: realTitle.value
     })
+}
+
+function save() {
+    localStorage.setItem("ww:hookCode", hookCode.value);
 }
 
 const props = defineProps<{
@@ -61,6 +69,8 @@ const realTitle = ref<string>("");
         <cdx-text-input label="Title" :placeholder="$i18n('ww:meta.placeholder-title').text()" v-model:model-value="realTitle"></cdx-text-input>
         <cdx-select :menu-items="menuItems" v-model:selected="menuItem"></cdx-select>
         <cdx-button weight="primary" @click="go">{{ $i18n("ww:meta.go") }}</cdx-button>
+        <cdx-text-area placeholder="Hook" v-model:model-value="hookCode"></cdx-text-area>
+        <cdx-button weight="primary" @click="save">{{ $i18n("ww:meta.save") }}</cdx-button>
         <div>
             {{ $i18n("ww:meta.normal-action") }}
             <cdx-select :menu-items="menuItems" v-model:selected="triggerWhenSelected" @update:selected="$emit('update:triggerWhenSelected', triggerWhenSelected)"></cdx-select>

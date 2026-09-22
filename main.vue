@@ -25,7 +25,7 @@ type IWikiWindowView = InstanceType<typeof WikiWindowView>;
 type IWikiWindow = IWikiWindowMeta | IWikiWindowView;
 
 const triggerWhenSelected = ref<keyof typeof Action>("View");
-
+const hookCode = ref(localStorage.getItem("ww:hookCode") || '');
 
 enum WWState {
     initial = 0,
@@ -111,6 +111,8 @@ function resolveLink(href: string) {
         title = decodeURIComponent(path.substring(articlePathWithout$1.length));
     } else if (path.startsWith(indexPHP)) {
         title = decodeURIComponent(url.searchParams.get("title") ?? "");
+    } else {
+        return;
     }
     
         // curid oldid特判
@@ -135,7 +137,7 @@ function resolveLink(href: string) {
         const actionParam = url.searchParams.get("action") || triggerWhenSelected.value.toLowerCase();
         switch (actionParam) {
             case "edit":
-                addWindow(new WikiWindowEditData(title));
+                allWindows.push(new WikiWindowEditData(title));
                 break;
             case "history":
                 resolveLink(url.href);
@@ -336,6 +338,9 @@ class WikiWindowMetaData extends WikiWindowData<typeof WikiWindowMeta> {
         this.props["onUpdate:triggerWhenSelected"] = (action) => {
             triggerWhenSelected.value = action as keyof typeof Action;
         }
+        this.props["onUpdate:hookCode"] = (code) => {
+            hookCode.value = code;
+        }
     }
     update(title: string) {
         console.log('updated', title);
@@ -352,6 +357,8 @@ class WikiWindowEditData extends WikiWindowData<typeof WikiWindowEdit> {
         this.props.pageTitle = ref(title);
         this.props.pageContent = ref("");
         this.props.pageMissing = ref(false);
+        this.props.hookCode = hookCode;
+        this.props.ready = ref(false);
         
 
         interface QueryResult {
@@ -366,7 +373,6 @@ class WikiWindowEditData extends WikiWindowData<typeof WikiWindowEdit> {
                     }>;
                     missing: boolean;
                 }>
-                
             };
         }
 
@@ -386,6 +392,7 @@ class WikiWindowEditData extends WikiWindowData<typeof WikiWindowEdit> {
             } else {
                 this.props.pageContent.value = page.revisions[0].slots.main.content;
             }
+            this.props.ready!.value = true;
             showWindow(this);
         });
     }
